@@ -113,6 +113,8 @@
 
 - [#15284](https://github.com/smartcontractkit/chainlink/pull/15284) [`7cd17d687a`](https://github.com/smartcontractkit/chainlink/commit/7cd17d687a11fcfe36ad78d6279dc642b6186eaa) - Bump Solana to include MultiNode integration. #added
 
+- [#15372](https://github.com/smartcontractkit/chainlink/pull/15372) [`d3fa330b1b`](https://github.com/smartcontractkit/chainlink/commit/d3fa330b1b3c275c48ea7ec962b4b8457f940fcd) - fix reported evm node states
+
 ## 2.18.0 - 2024-11-01
 
 ### Minor Changes
