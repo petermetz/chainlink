@@ -42,13 +42,15 @@ type SetupTestRegistryRequest struct {
 }
 
 type SetupTestRegistryResponse struct {
-	Registry         *capabilities_registry.CapabilitiesRegistry
-	Chain            deployment.Chain
-	RegistrySelector uint64
-	ContractSet      *internal.ContractSet
-	CapabilityCache  *CapabilityCache
+	CapabilitiesRegistry *capabilities_registry.CapabilitiesRegistry
+	Chain                deployment.Chain
+	RegistrySelector     uint64
+	CapabilityCache      *CapabilityCache
 }
 
+// SetupTestRegistry deploys a capabilities registry to the given chain
+// and adds the given capabilities and node operators
+// It can be used in tests that mutate the registry without any other setup such as actual nodes, dons, jobs, etc.
 func SetupTestRegistry(t *testing.T, lggr logger.Logger, req *SetupTestRegistryRequest) *SetupTestRegistryResponse {
 	chain := testChain(t)
 
@@ -75,18 +77,14 @@ func SetupTestRegistry(t *testing.T, lggr logger.Logger, req *SetupTestRegistryR
 	addDons(t, lggr, chain, registry, capCache, req.Dons)
 
 	return &SetupTestRegistryResponse{
-		Registry:         registry,
-		Chain:            chain,
-		RegistrySelector: chain.Selector,
-		ContractSet: &internal.ContractSet{
-			CapabilitiesRegistry: registry,
-		},
-		CapabilityCache: capCache,
+		CapabilitiesRegistry: registry,
+		Chain:                chain,
+		RegistrySelector:     chain.Selector,
+		CapabilityCache:      capCache,
 	}
 }
 
 // ToNodeParams transforms a map of node operators to nops and a map of node p2pID to capabilities
-// into a slice of node params required to register the nodes.  The number of capabilities
 // must match the number of nodes.
 func ToNodeParams(t *testing.T,
 	nop2Nodes map[capabilities_registry.CapabilitiesRegistryNodeOperator][]*internal.P2PSignerEnc,
