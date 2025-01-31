@@ -184,7 +184,7 @@ the given `_test` database.
 
 Note: Other environment variables should not be set for all tests to pass
 
-There helper script for initial setup to create an appropriate test user. It requires postgres to be running on localhost at port 5432. You will be prompted for
+There helper script for initial setup to create an appropriate test user. It requires postgres to be running on localhost at port 5432. (`make start-testdb`) You will be prompted for
 the `postgres` user password 
 
 ```bash

@@ -7,7 +7,7 @@ import {IEVM2AnyOnRamp} from "./interfaces/IEVM2AnyOnRamp.sol";
 import {IRMN} from "./interfaces/IRMN.sol";
 import {IRouter} from "./interfaces/IRouter.sol";
 import {IRouterClient} from "./interfaces/IRouterClient.sol";
-import {IWrappedNative} from "./interfaces/IWrappedNative.sol";
+// import {IWrappedNative} from "./interfaces/IWrappedNative.sol";
 
 import {OwnerIsCreator} from "../shared/access/OwnerIsCreator.sol";
 import {CallWithExactGas} from "../shared/call/CallWithExactGas.sol";
@@ -34,6 +34,7 @@ contract Router is IRouter, IRouterClient, ITypeAndVersion, OwnerIsCreator {
   event OffRampAdded(uint64 indexed sourceChainSelector, address offRamp);
   event OffRampRemoved(uint64 indexed sourceChainSelector, address offRamp);
   event MessageExecuted(bytes32 messageId, uint64 sourceChainSelector, address offRamp, bytes32 calldataHash);
+  event DebugMessageLogged(string msg);
 
   struct OnRamp {
     uint64 destChainSelector;
@@ -125,15 +126,18 @@ contract Router is IRouter, IRouterClient, ITypeAndVersion, OwnerIsCreator {
       // Wrap and send native payment.
       // Note we take the whole msg.value regardless if its larger.
       feeTokenAmount = msg.value;
-      IWrappedNative(message.feeToken).deposit{value: feeTokenAmount}();
-      IERC20(message.feeToken).safeTransfer(onRamp, feeTokenAmount);
+      // IWrappedNative(message.feeToken).deposit{value: feeTokenAmount}();
+      // IERC20(message.feeToken).safeTransfer(onRamp, feeTokenAmount);
+      emit DebugMessageLogged("ccipSend() 1.1 OK");
     } else {
       if (msg.value > 0) revert InvalidMsgValue();
       // We rely on getFee to validate that the feeToken is whitelisted.
       feeTokenAmount = IEVM2AnyOnRamp(onRamp).getFee(destinationChainSelector, message);
-      IERC20(message.feeToken).safeTransferFrom(msg.sender, onRamp, feeTokenAmount);
+      // IERC20(message.feeToken).safeTransferFrom(msg.sender, onRamp, feeTokenAmount);
+      emit DebugMessageLogged("ccipSend() 1.2 OK");
     }
 
+    emit DebugMessageLogged("ccipSend() 1.3 running the token loop ...");
     // Transfer the tokens to the token pools.
     for (uint256 i = 0; i < message.tokenAmounts.length; ++i) {
       IERC20 token = IERC20(message.tokenAmounts[i].token);
@@ -145,7 +149,11 @@ contract Router is IRouter, IRouterClient, ITypeAndVersion, OwnerIsCreator {
       );
     }
 
-    return IEVM2AnyOnRamp(onRamp).forwardFromRouter(destinationChainSelector, message, feeTokenAmount, msg.sender);
+    emit DebugMessageLogged("ccipSend() 1.4 calling onRamp now...");
+    bytes32 out = IEVM2AnyOnRamp(onRamp).forwardFromRouter(destinationChainSelector, message, feeTokenAmount, msg.sender);
+    emit DebugMessageLogged("ccipSend() 1.5 called onRamp OK!");
+
+    return out;
   }
 
   // ================================================================

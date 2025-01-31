@@ -204,6 +204,11 @@ func (n ChainlinkAppFactory) NewApplication(ctx context.Context, cfg chainlink.G
 		return nil, errors.Wrap(err, "error authenticating keystore")
 	}
 
+	err = n.ImportP2PKey(ctx, cfg, keyStore, appLggr)
+	if err != nil {
+		appLggr.Warnf("Failed to import PVP.V2 keys: %v", err)
+	}
+
 	err = keyStore.CSA().EnsureKey(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to ensure CSA key")
@@ -316,6 +321,50 @@ func (n ChainlinkAppFactory) NewApplication(ctx context.Context, cfg chainlink.G
 		RetirementReportCache:      retirementReportCache,
 		CapabilitiesRegistry:       capabilitiesRegistry,
 	})
+}
+
+func (n ChainlinkAppFactory) ImportP2PKey(ctx context.Context, cfg chainlink.GeneralConfig, keyStore keystore.Master, appLggr logger.Logger) error {
+	// Get the file paths from the configuration
+	importKeyDataFile := cfg.P2P().V2().ImportKeyDataFile()
+	importKeyPassFile := cfg.P2P().V2().ImportKeyPassFile()
+
+	// Check if both file paths are set
+	if importKeyDataFile == "" || importKeyPassFile == "" {
+		appLggr.Infof("One or both of importKeyDataFile, importKeyPassFile not set. Skipping PVP.V2 key import.")
+		return nil;
+	}
+	appLggr.Infof("Attempting to import P2P.V2 keys from %s and %s", importKeyDataFile, importKeyPassFile)
+
+	// Check if the files exist and are accessible
+	if _, err := os.Stat(importKeyDataFile); os.IsNotExist(err) {
+		return fmt.Errorf("key data file does not exist: %s", importKeyDataFile)
+	}
+	appLggr.Debugf("ImportKeyDataFile exists at %s", importKeyDataFile)
+
+	if _, err := os.Stat(importKeyPassFile); os.IsNotExist(err) {
+		return fmt.Errorf("password file does not exist: %s", importKeyPassFile)
+	}
+	appLggr.Debugf("importKeyPassFile exists at %s", importKeyPassFile)
+
+	keyData, err := os.ReadFile(importKeyDataFile)
+	if err != nil {
+		return errors.Wrap(err, "failed to read key data file")
+	}
+
+	passwordBytes, err := os.ReadFile(importKeyPassFile)
+	if err != nil {
+		return errors.Wrap(err, "failed to read password file")
+	}
+	password := string(passwordBytes)
+
+	// Import the key using the key store
+	key, err := keyStore.P2P().Import(ctx, keyData, password)
+	if err != nil {
+		return errors.Wrap(err, "failed to import P2P key")
+	}
+
+	appLggr.Infof("Successfully imported P2P key with ID: %s\n", key.ID())
+	return nil
 }
 
 // handleNodeVersioning is a setup-time helper to encapsulate version changes and db migration

@@ -38,7 +38,7 @@ docs: ## Install and run pkgsite to view Go docs
 
 .PHONY: install-chainlink
 install-chainlink: operator-ui ## Install the chainlink binary.
-	go install $(GOFLAGS) .
+	go install -tags dev $(GOFLAGS) .
 
 .PHONY: install-chainlink-cover
 install-chainlink-cover: operator-ui ## Install the chainlink binary with cover flag.
@@ -70,15 +70,17 @@ docker:
 	--build-arg COMMIT_SHA=$(COMMIT_SHA) \
 	-f core/chainlink.Dockerfile .
 
+.PHONY: docker2 ## Build the chainlink docker image
+docker2:
+	docker buildx build \
+	--build-arg COMMIT_SHA=$(COMMIT_SHA) \
+	-f core/chainlink.goreleaser.Dockerfile . --tag chainlink:local3
+
 .PHONY: docker-ccip ## Build the chainlink docker image
 docker-ccip:
 	docker buildx build \
 	--build-arg COMMIT_SHA=$(COMMIT_SHA) \
-	-f core/chainlink.Dockerfile . -t chainlink-ccip:latest
-
-	docker buildx build \
-	--build-arg COMMIT_SHA=$(COMMIT_SHA) \
-	-f ccip/ccip.Dockerfile .
+	-f core/chainlink.Dockerfile . -t chainlink-ccip:local4
 
 .PHONY: docker-plugins ## Build the chainlink-plugins docker image
 docker-plugins:
@@ -115,7 +117,7 @@ testscripts-update: ## Update testdata/scripts/* files via testscript.
 
 .PHONY: start-testdb
 start-testdb:
-	docker run --name test-db-core -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+	docker run --name test-db-core -p 55432:5432 -e POSTGRES_PASSWORD=postgres -d postgres:14.15-alpine3.20
 
 .PHONY: setup-testdb
 setup-testdb: ## Setup the test database.

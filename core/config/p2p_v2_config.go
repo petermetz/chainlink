@@ -13,4 +13,6 @@ type V2 interface {
 	DeltaDial() commonconfig.Duration
 	DeltaReconcile() commonconfig.Duration
 	ListenAddresses() []string
+	ImportKeyDataFile() string
+	ImportKeyPassFile() string
 }

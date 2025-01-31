@@ -79,3 +79,16 @@ func (v *p2pv2) ListenAddresses() []string {
 	}
 	return nil
 }
+
+func (v *p2pv2) ImportKeyDataFile() string {
+	if l := v.c.ImportKeyDataFile; l != nil {
+		return *l
+	}
+	return ""
+}
+func (v *p2pv2) ImportKeyPassFile() string {
+	if l := v.c.ImportKeyPassFile; l != nil {
+		return *l
+	}
+	return ""
+}

@@ -9,6 +9,11 @@ library Client {
     uint256 amount; // Amount of tokens.
   }
 
+  struct CactiCcipMsg {
+    bytes32 cactiMsgId;
+    bytes data;
+  }
+
   struct Any2EVMMessage {
     bytes32 messageId; // MessageId corresponding to ccipSend on source.
     uint64 sourceChainSelector; // Source chain selector.

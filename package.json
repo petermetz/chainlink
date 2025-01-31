@@ -25,5 +25,6 @@
     "@changesets/cli": "~2.26.2",
     "@changesets/get-github-info": "^0.6.0",
     "semver": "^7.6.3"
-  }
+  },
+  "packageManager": "pnpm@9.15.3+sha1.120e76442c589bb9a3267dbbefa5658c9943fcae"
 }

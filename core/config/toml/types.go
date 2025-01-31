@@ -1071,6 +1071,8 @@ type P2PV2 struct {
 	DeltaDial            *commonconfig.Duration
 	DeltaReconcile       *commonconfig.Duration
 	ListenAddresses      *[]string
+	ImportKeyDataFile    *string
+	ImportKeyPassFile    *string
 }
 
 func (p *P2PV2) setFrom(f *P2PV2) {
@@ -1091,6 +1093,12 @@ func (p *P2PV2) setFrom(f *P2PV2) {
 	}
 	if v := f.ListenAddresses; v != nil {
 		p.ListenAddresses = v
+	}
+	if v := f.ImportKeyDataFile; v != nil {
+		p.ImportKeyDataFile = v;
+	}
+	if v := f.ImportKeyPassFile; v != nil {
+		p.ImportKeyPassFile = v;
 	}
 }
 

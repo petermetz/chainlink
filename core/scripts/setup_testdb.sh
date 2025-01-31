@@ -1,13 +1,14 @@
-#/bin/sh
+#/bin/bash
 
-function exit_error {
+exit_error () {
     echo "Error: $1"
     exit 1
 }
 # Create a new user and database for development
 # This script is intended to be run on a local development machine
-tdir=$(mktemp -d -t db-dev-user)
+tdir=$(mktemp -d -t db-dev-user.XXX-XXX)
 
+port=55432
 username="chainlink_dev"
 password="insecurepassword"
 database="chainlink_development_test"
@@ -44,15 +45,15 @@ echo "##########################################################################
 echo "##########################################################################################################"
 echo ""
 # Run the SQL commands
-psql -U postgres -h localhost -f $tdir/db-dev-user.sql || exit_error "Failed to create user $username and database $database"
+psql -U postgres -h localhost -p $port -f $tdir/db-dev-user.sql || exit_error "Failed to create user $username and database $database"
 
 
 #test the connection
-PGPASSWORD=$password psql -U $username -h localhost -d $database -c "SELECT 1"  ||  exit_error "Connection failed for $username to $database"
+PGPASSWORD=$password psql -U $username -h localhost -p $port -d $database -c "SELECT 1"  ||  exit_error "Connection failed for $username to $database"
 
 
 
-db_url=$(echo "CL_DATABASE_URL=postgresql://$username:$password@localhost:5432/$database?sslmode=disable")
+db_url=$(echo "CL_DATABASE_URL=postgresql://$username:$password@localhost:$port/$database?sslmode=disable")
 echo $db_url
 repo=$(git rev-parse --show-toplevel)
 pushd $repo

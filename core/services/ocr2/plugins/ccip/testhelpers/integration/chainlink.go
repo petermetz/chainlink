@@ -982,6 +982,12 @@ func (c *CCIPIntegrationTestHarness) SetupAndStartNodes(ctx context.Context, t *
 			},
 			ConfigEncryptionPublicKey: kb.ConfigEncryptionPublicKey(),
 		})
+		// oracleJson, err := json.Marshal(oracles[len(oracles)-1])
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		fmt.Println()
+		fmt.Printf("MARKER_100 Created OracleIdentityExtra=%+v", oracles[len(oracles)-1])
 		err = app.Start(ctx)
 		require.NoError(t, err)
 		t.Cleanup(func() {
@@ -994,6 +1000,42 @@ func (c *CCIPIntegrationTestHarness) SetupAndStartNodes(ctx context.Context, t *
 	commitOffchainConfig := c.CreateDefaultCommitOffchainConfig(t)
 	execOnchainConfig := c.CreateDefaultExecOnchainConfig(t)
 	execOffchainConfig := c.CreateDefaultExecOffchainConfig(t)
+
+	// commitOnchainConfigJson, err := json.Marshal(commitOnchainConfig)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println()
+	// fmt.Printf("MARKER_101 Created commitOnchainConfig=%s", commitOnchainConfigJson)
+	fmt.Println()
+	fmt.Printf("MARKER_101 Created commitOnchainConfig=%+v", commitOnchainConfig)
+
+	// commitOffchainConfigJson, err := json.Marshal(commitOffchainConfig)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println()
+	// fmt.Printf("MARKER_101 Created commitOffchainConfig=%s", commitOffchainConfigJson)
+	fmt.Println()
+	fmt.Printf("MARKER_101 Created commitOffchainConfig=%+v", commitOffchainConfig)
+
+	// execOnchainConfigJson, err := json.Marshal(execOnchainConfig)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println()
+	// fmt.Printf("MARKER_101 Created execOnchainConfig=%s", execOnchainConfigJson)
+	fmt.Println()
+	fmt.Printf("MARKER_101 Created execOnchainConfig=%+v", execOnchainConfig)
+
+	// execOffchainConfigJson, err := json.Marshal(execOffchainConfig)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println()
+	// fmt.Printf("MARKER_101 Created execOffchainConfig=%s", execOffchainConfigJson)
+	fmt.Println()
+	fmt.Printf("MARKER_101 Created execOffchainConfig=%+v", execOffchainConfig)
 
 	configBlock := c.SetupOnchainConfig(t, commitOnchainConfig, commitOffchainConfig, execOnchainConfig, execOffchainConfig)
 	c.Nodes = nodes
